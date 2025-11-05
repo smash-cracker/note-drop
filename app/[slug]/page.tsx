@@ -12,13 +12,13 @@ async function markdownToHtml(markdown: string): Promise<string> {
 }
 
 type PageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export default async function Page({ params }: PageProps) {
-  const { slug } = params;
+  const { slug } = await params;
 
   const storedMarkdown =
     (await getPageMarkdown(slug)) ??

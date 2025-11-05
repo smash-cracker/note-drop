@@ -5,19 +5,19 @@ import { getPageMarkdown, savePageMarkdown } from "@/lib/page-store";
 export const dynamic = "force-dynamic";
 
 type RouteParams = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export async function GET(_: Request, { params }: RouteParams) {
-  const { slug } = params;
+  const { slug } = await params;
   const markdown = (await getPageMarkdown(slug)) ?? "";
   return NextResponse.json({ markdown });
 }
 
 export async function PUT(request: Request, { params }: RouteParams) {
-  const { slug } = params;
+  const { slug } = await params;
   try {
     const body = await request.json();
     if (typeof body?.markdown !== "string") {

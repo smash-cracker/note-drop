@@ -34,6 +34,7 @@ export function MarkdownSection({
     "saved"
   );
   const isMountedRef = useRef(true);
+  const currentSlugRef = useRef(slug);
 
   useEffect(() => {
     return () => {
@@ -45,11 +46,20 @@ export function MarkdownSection({
   }, []);
 
   useEffect(() => {
+    currentSlugRef.current = slug;
+  }, [slug]);
+
+  useEffect(() => {
     lastSavedRef.current = initialMarkdown;
     setMarkdown(initialMarkdown);
     setRendered(initialHtml);
     setToggleValue(undefined);
     setSaveState("saved");
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = null;
+    }
   }, [initialMarkdown, initialHtml, slug]);
 
   useEffect(() => {
@@ -87,7 +97,8 @@ export function MarkdownSection({
 
     saveTimeoutRef.current = setTimeout(async () => {
       try {
-        const response = await fetch(`/api/pages/${slug}`, {
+        const currentSlug = currentSlugRef.current;
+        const response = await fetch(`/api/pages/${currentSlug}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -120,7 +131,7 @@ export function MarkdownSection({
         saveTimeoutRef.current = null;
       }
     };
-  }, [markdown, slug]);
+  }, [markdown]);
 
   const applyFormat = ({
     prefix,
