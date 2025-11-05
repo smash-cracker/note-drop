@@ -26,6 +26,9 @@ export function MarkdownSection({
   initialMarkdown,
   initialHtml,
 }: MarkdownSectionProps) {
+  const [activeTab, setActiveTab] = useState<"markdown" | "preview">(
+    "markdown"
+  );
   const [markdown, setMarkdown] = useState(initialMarkdown);
   const [rendered, setRendered] = useState(initialHtml);
   const [toggleValue, setToggleValue] = useState<string | undefined>(undefined);
@@ -199,7 +202,13 @@ export function MarkdownSection({
 
   return (
     <section className="flex min-h-screen flex-col bg-background text-foreground">
-      <Tabs defaultValue="markdown" className="flex flex-1 flex-col gap-0">
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) =>
+          setActiveTab((value as "markdown" | "preview") ?? "markdown")
+        }
+        className="flex flex-1 flex-col gap-0"
+      >
         <div className="border-b border-border bg-card/60 px-6 py-4 backdrop-blur">
           <div className="grid grid-cols-[auto_1fr_auto] items-center gap-6">
             <div className="flex items-center gap-2">
@@ -229,6 +238,7 @@ export function MarkdownSection({
                 value={toggleValue}
                 onValueChange={handleToggleChange}
                 aria-label="Formatting options"
+                disabled={activeTab === "preview"}
               >
                 <ToggleGroupItem value="bold" aria-label="Toggle bold">
                   <Bold className="h-4 w-4" />
