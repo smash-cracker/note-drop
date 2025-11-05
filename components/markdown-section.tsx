@@ -209,8 +209,8 @@ export function MarkdownSection({
         }
         className="flex flex-1 flex-col gap-0"
       >
-        <div className="border-b border-border bg-card/60 px-6 py-4 backdrop-blur">
-          <div className="grid grid-cols-[auto_1fr_auto] items-center gap-6">
+        <div className="border-b border-border bg-card/60 px-4 py-4 backdrop-blur sm:px-6">
+          <div className="flex flex-col gap-4 sm:grid sm:grid-cols-[auto_1fr_auto] sm:items-center sm:gap-6">
             <div className="flex items-center gap-2">
               <Image
                 src="/clipboard-lite.svg"
@@ -254,10 +254,10 @@ export function MarkdownSection({
                 </ToggleGroupItem>
               </ToggleGroup>
             </div>
-            <div className="flex items-center justify-end gap-3">
+            <div className="flex w-full flex-wrap items-center justify-between gap-3 sm:w-auto sm:justify-end">
               <ModeToggle />
               <span className={`text-xs ${statusColor}`}>{statusLabel}</span>
-              <TabsList className="w-fit bg-muted/60 backdrop-blur">
+              <TabsList className="w-full bg-muted/60 backdrop-blur sm:w-fit">
                 <TabsTrigger value="markdown">Markdown</TabsTrigger>
                 <TabsTrigger value="preview">Preview</TabsTrigger>
               </TabsList>
@@ -265,7 +265,7 @@ export function MarkdownSection({
           </div>
         </div>
         <div className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex flex-1 flex-col px-6 py-10">
+          <div className="flex flex-1 flex-col px-4 py-6 sm:px-6 sm:py-10">
             <TabsContent value="markdown" className="flex flex-1 flex-col">
               <label
                 htmlFor="markdown-input"
@@ -279,7 +279,7 @@ export function MarkdownSection({
                   id="markdown-input"
                   value={markdown}
                   onChange={(event) => setMarkdown(event.target.value)}
-                  className="flex-1 min-h-[300px] resize-none rounded-lg border border-border bg-card px-4 py-3 font-mono text-sm text-foreground shadow-inner focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="flex-1 min-h-[250px] resize-none rounded-lg border border-border bg-card px-3 py-3 font-mono text-sm text-foreground shadow-inner focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:min-h-[300px] sm:px-4"
                   spellCheck={false}
                 />
               </div>
@@ -289,7 +289,7 @@ export function MarkdownSection({
                 Preview
               </span>
               <div
-                className="flex-1 min-h-[300px] overflow-y-auto rounded-lg border border-border bg-card/80 px-4 py-6"
+                className="flex-1 min-h-[250px] overflow-y-auto rounded-lg border border-border bg-card/80 px-3 py-6 sm:min-h-[300px] sm:px-4"
                 dangerouslySetInnerHTML={{ __html: rendered }}
               />
             </TabsContent>
