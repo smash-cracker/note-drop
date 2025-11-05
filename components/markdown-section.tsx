@@ -266,28 +266,30 @@ export function MarkdownSection({
         </div>
         <div className="flex flex-1 flex-col overflow-hidden">
           <div className="flex flex-1 flex-col px-6 py-10">
-            <TabsContent value="markdown" className="flex h-full flex-col">
+            <TabsContent value="markdown" className="flex flex-1 flex-col">
               <label
                 htmlFor="markdown-input"
                 className="mb-2 block text-sm text-muted-foreground"
               >
                 Markdown
               </label>
-              <textarea
-                ref={textareaRef}
-                id="markdown-input"
-                value={markdown}
-                onChange={(event) => setMarkdown(event.target.value)}
-                className="h-full min-h-[300px] w-full resize-none rounded-lg border border-border bg-card px-4 py-3 font-mono text-sm text-foreground shadow-inner focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                spellCheck={false}
-              />
+              <div className="flex flex-1">
+                <textarea
+                  ref={textareaRef}
+                  id="markdown-input"
+                  value={markdown}
+                  onChange={(event) => setMarkdown(event.target.value)}
+                  className="flex-1 min-h-[300px] resize-none rounded-lg border border-border bg-card px-4 py-3 font-mono text-sm text-foreground shadow-inner focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  spellCheck={false}
+                />
+              </div>
             </TabsContent>
-            <TabsContent value="preview" className="flex h-full flex-col">
+            <TabsContent value="preview" className="flex flex-1 flex-col">
               <span className="mb-2 block text-sm text-muted-foreground">
                 Preview
               </span>
               <div
-                className="h-full min-h-[300px] overflow-y-auto rounded-lg border border-border bg-card/80 px-4 py-6"
+                className="flex-1 min-h-[300px] overflow-y-auto rounded-lg border border-border bg-card/80 px-4 py-6"
                 dangerouslySetInnerHTML={{ __html: rendered }}
               />
             </TabsContent>
