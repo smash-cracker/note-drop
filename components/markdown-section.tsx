@@ -201,7 +201,7 @@ export function MarkdownSection({
     <section className="flex min-h-screen flex-col bg-background text-foreground">
       <Tabs defaultValue="markdown" className="flex flex-1 flex-col gap-0">
         <div className="border-b border-border bg-card/60 px-6 py-4 backdrop-blur">
-          <div className="flex items-center gap-6">
+          <div className="grid grid-cols-[auto_1fr_auto] items-center gap-6">
             <div className="flex items-center gap-2">
               <Image
                 src="/clipboard-lite.svg"
@@ -223,26 +223,28 @@ export function MarkdownSection({
                 notepad
               </span>
             </div>
-            <ToggleGroup
-              type="single"
-              value={toggleValue}
-              onValueChange={handleToggleChange}
-              aria-label="Formatting options"
-            >
-              <ToggleGroupItem value="bold" aria-label="Toggle bold">
-                <Bold className="h-4 w-4" />
-              </ToggleGroupItem>
-              <ToggleGroupItem value="italic" aria-label="Toggle italic">
-                <Italic className="h-4 w-4" />
-              </ToggleGroupItem>
-              <ToggleGroupItem
-                value="strikethrough"
-                aria-label="Toggle strikethrough"
+            <div className="flex justify-center">
+              <ToggleGroup
+                type="single"
+                value={toggleValue}
+                onValueChange={handleToggleChange}
+                aria-label="Formatting options"
               >
-                <Underline className="h-4 w-4" />
-              </ToggleGroupItem>
-            </ToggleGroup>
-            <div className="ml-auto flex items-center gap-3">
+                <ToggleGroupItem value="bold" aria-label="Toggle bold">
+                  <Bold className="h-4 w-4" />
+                </ToggleGroupItem>
+                <ToggleGroupItem value="italic" aria-label="Toggle italic">
+                  <Italic className="h-4 w-4" />
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="strikethrough"
+                  aria-label="Toggle strikethrough"
+                >
+                  <Underline className="h-4 w-4" />
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+            <div className="flex items-center justify-end gap-3">
               <ModeToggle />
               <span className={`text-xs ${statusColor}`}>{statusLabel}</span>
               <TabsList className="w-fit bg-muted/60 backdrop-blur">
