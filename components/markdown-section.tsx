@@ -14,11 +14,13 @@ import {
 } from "@/components/ui/tabs";
 
 type MarkdownSectionProps = {
+  slug: string;
   initialMarkdown: string;
   initialHtml: string;
 };
 
 export function MarkdownSection({
+  slug,
   initialMarkdown,
   initialHtml,
 }: MarkdownSectionProps) {
@@ -26,6 +28,29 @@ export function MarkdownSection({
   const [rendered, setRendered] = useState(initialHtml);
   const [toggleValue, setToggleValue] = useState<string | undefined>(undefined);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const lastSavedRef = useRef(initialMarkdown);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [saveState, setSaveState] = useState<"saved" | "saving" | "error">(
+    "saved"
+  );
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    lastSavedRef.current = initialMarkdown;
+    setMarkdown(initialMarkdown);
+    setRendered(initialHtml);
+    setToggleValue(undefined);
+    setSaveState("saved");
+  }, [initialMarkdown, initialHtml, slug]);
 
   useEffect(() => {
     let shouldUpdate = true;
@@ -48,6 +73,54 @@ export function MarkdownSection({
       shouldUpdate = false;
     };
   }, [markdown]);
+
+  useEffect(() => {
+    if (markdown === lastSavedRef.current) {
+      return;
+    }
+
+    setSaveState("saving");
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/pages/${slug}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ markdown }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to save page (${response.status})`);
+        }
+
+        lastSavedRef.current = markdown;
+
+        if (isMountedRef.current) {
+          setSaveState("saved");
+        }
+      } catch (error) {
+        console.error(error);
+        if (isMountedRef.current) {
+          setSaveState("error");
+        }
+      } finally {
+        saveTimeoutRef.current = null;
+      }
+    }, 600);
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+        saveTimeoutRef.current = null;
+      }
+    };
+  }, [markdown, slug]);
 
   const applyFormat = ({
     prefix,
@@ -99,11 +172,25 @@ export function MarkdownSection({
     setToggleValue(undefined);
   };
 
+  const statusLabel =
+    saveState === "saving"
+      ? "Saving..."
+      : saveState === "error"
+        ? "Save failed"
+        : "Saved";
+
+  const statusColor =
+    saveState === "error"
+      ? "text-red-400"
+      : saveState === "saving"
+        ? "text-zinc-300"
+        : "text-zinc-500";
+
   return (
     <section className="flex min-h-screen flex-col bg-zinc-950 text-zinc-100">
       <Tabs defaultValue="markdown" className="flex flex-1 flex-col gap-0">
         <div className="border-b border-zinc-800 bg-zinc-900/60 px-6 py-4 backdrop-blur">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
             <ToggleGroup
               type="single"
               value={toggleValue}
@@ -123,10 +210,13 @@ export function MarkdownSection({
                 <Underline className="h-4 w-4" />
               </ToggleGroupItem>
             </ToggleGroup>
-            <TabsList className="ml-auto w-fit bg-zinc-900/60 backdrop-blur">
-              <TabsTrigger value="markdown">Markdown</TabsTrigger>
-              <TabsTrigger value="preview">Preview</TabsTrigger>
-            </TabsList>
+            <div className="ml-auto flex items-center gap-3">
+              <span className={`text-xs ${statusColor}`}>{statusLabel}</span>
+              <TabsList className="w-fit bg-zinc-900/60 backdrop-blur">
+                <TabsTrigger value="markdown">Markdown</TabsTrigger>
+                <TabsTrigger value="preview">Preview</TabsTrigger>
+              </TabsList>
+            </div>
           </div>
         </div>
         <div className="flex flex-1 flex-col overflow-hidden">
