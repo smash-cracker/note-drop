@@ -229,7 +229,7 @@ export function MarkdownSection({
                 priority
               />
               <span className="text-sm font-semibold uppercase tracking-widest">
-                notepad
+                note drop
               </span>
             </div>
             <div className="flex justify-center">
@@ -269,7 +269,7 @@ export function MarkdownSection({
             <TabsContent value="markdown" className="flex flex-1 flex-col">
               <label
                 htmlFor="markdown-input"
-                className="mb-2 block text-sm text-muted-foreground"
+                className="sr-only"
               >
                 Markdown
               </label>
@@ -285,7 +285,7 @@ export function MarkdownSection({
               </div>
             </TabsContent>
             <TabsContent value="preview" className="flex flex-1 flex-col">
-              <span className="mb-2 block text-sm text-muted-foreground">
+              <span className="sr-only">
                 Preview
               </span>
               <div
