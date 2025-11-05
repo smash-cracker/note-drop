@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Bold, Italic, Underline } from "lucide-react";
 import { remark } from "remark";
@@ -200,7 +201,28 @@ export function MarkdownSection({
     <section className="flex min-h-screen flex-col bg-background text-foreground">
       <Tabs defaultValue="markdown" className="flex flex-1 flex-col gap-0">
         <div className="border-b border-border bg-card/60 px-6 py-4 backdrop-blur">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <Image
+                src="/clipboard-lite.svg"
+                alt="Notepad logo"
+                width={28}
+                height={28}
+                className="dark:hidden"
+                priority
+              />
+              <Image
+                src="/clipboard-dark.svg"
+                alt="Notepad logo"
+                width={28}
+                height={28}
+                className="hidden dark:block"
+                priority
+              />
+              <span className="text-sm font-semibold uppercase tracking-widest">
+                notepad
+              </span>
+            </div>
             <ToggleGroup
               type="single"
               value={toggleValue}
