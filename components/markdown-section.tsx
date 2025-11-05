@@ -193,15 +193,13 @@ export function MarkdownSection({
 
   const statusColor =
     saveState === "error"
-      ? "text-red-400"
-      : saveState === "saving"
-        ? "text-zinc-300"
-        : "text-zinc-500";
+      ? "text-destructive"
+      : "text-muted-foreground";
 
   return (
-    <section className="flex min-h-screen flex-col bg-zinc-950 text-zinc-100">
+    <section className="flex min-h-screen flex-col bg-background text-foreground">
       <Tabs defaultValue="markdown" className="flex flex-1 flex-col gap-0">
-        <div className="border-b border-zinc-800 bg-zinc-900/60 px-6 py-4 backdrop-blur">
+        <div className="border-b border-border bg-card/60 px-6 py-4 backdrop-blur">
           <div className="flex items-center gap-4">
             <ToggleGroup
               type="single"
@@ -223,13 +221,13 @@ export function MarkdownSection({
               </ToggleGroupItem>
             </ToggleGroup>
             <div className="ml-auto flex items-center gap-3">
+              <ModeToggle />
               <span className={`text-xs ${statusColor}`}>{statusLabel}</span>
-              <TabsList className="w-fit bg-zinc-900/60 backdrop-blur">
+              <TabsList className="w-fit bg-muted/60 backdrop-blur">
                 <TabsTrigger value="markdown">Markdown</TabsTrigger>
                 <TabsTrigger value="preview">Preview</TabsTrigger>
               </TabsList>
             </div>
-            <ModeToggle />
           </div>
         </div>
         <div className="flex flex-1 flex-col overflow-hidden">
@@ -237,7 +235,7 @@ export function MarkdownSection({
             <TabsContent value="markdown" className="flex h-full flex-col">
               <label
                 htmlFor="markdown-input"
-                className="mb-2 block text-sm text-zinc-400"
+                className="mb-2 block text-sm text-muted-foreground"
               >
                 Markdown
               </label>
@@ -246,14 +244,16 @@ export function MarkdownSection({
                 id="markdown-input"
                 value={markdown}
                 onChange={(event) => setMarkdown(event.target.value)}
-                className="h-full min-h-[300px] w-full resize-none rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 font-mono text-sm text-zinc-100 shadow-inner focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500"
+                className="h-full min-h-[300px] w-full resize-none rounded-lg border border-border bg-card px-4 py-3 font-mono text-sm text-foreground shadow-inner focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 spellCheck={false}
               />
             </TabsContent>
             <TabsContent value="preview" className="flex h-full flex-col">
-              <span className="mb-2 block text-sm text-zinc-400">Preview</span>
+              <span className="mb-2 block text-sm text-muted-foreground">
+                Preview
+              </span>
               <div
-                className="h-full min-h-[300px] overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-900/60 px-4 py-6"
+                className="h-full min-h-[300px] overflow-y-auto rounded-lg border border-border bg-card/80 px-4 py-6"
                 dangerouslySetInnerHTML={{ __html: rendered }}
               />
             </TabsContent>
