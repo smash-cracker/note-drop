@@ -1,0 +1,162 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { Bold, Italic, Underline } from "lucide-react";
+import { remark } from "remark";
+import html from "remark-html";
+
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+
+type MarkdownSectionProps = {
+  initialMarkdown: string;
+  initialHtml: string;
+};
+
+export function MarkdownSection({
+  initialMarkdown,
+  initialHtml,
+}: MarkdownSectionProps) {
+  const [markdown, setMarkdown] = useState(initialMarkdown);
+  const [rendered, setRendered] = useState(initialHtml);
+  const [toggleValue, setToggleValue] = useState<string | undefined>(undefined);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    let shouldUpdate = true;
+
+    remark()
+      .use(html)
+      .process(markdown)
+      .then((file) => {
+        if (shouldUpdate) {
+          setRendered(String(file));
+        }
+      })
+      .catch(() => {
+        if (shouldUpdate) {
+          setRendered(markdown);
+        }
+      });
+
+    return () => {
+      shouldUpdate = false;
+    };
+  }, [markdown]);
+
+  const applyFormat = ({
+    prefix,
+    suffix = prefix,
+    placeholder,
+  }: {
+    prefix: string;
+    suffix?: string;
+    placeholder: string;
+  }) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const { selectionStart, selectionEnd, value } = textarea;
+    const selected = value.slice(selectionStart, selectionEnd);
+    const snippet = selected || placeholder;
+    const wrapped = `${prefix}${snippet}${suffix}`;
+    const nextValue =
+      value.slice(0, selectionStart) + wrapped + value.slice(selectionEnd);
+
+    setMarkdown(nextValue);
+
+    requestAnimationFrame(() => {
+      const start = selectionStart + prefix.length;
+      const end = start + snippet.length;
+      textarea.focus();
+      textarea.setSelectionRange(start, end);
+    });
+  };
+
+  const handleToggleChange = (value: string | undefined) => {
+    if (!value) {
+      setToggleValue(undefined);
+      return;
+    }
+
+    if (value === "bold") {
+      applyFormat({ prefix: "**", placeholder: "bold text" });
+    }
+
+    if (value === "italic") {
+      applyFormat({ prefix: "*", placeholder: "italic text" });
+    }
+
+    if (value === "strikethrough") {
+      applyFormat({ prefix: "~~", placeholder: "strikethrough" });
+    }
+
+    setToggleValue(undefined);
+  };
+
+  return (
+    <section className="flex min-h-screen flex-col bg-zinc-950 text-zinc-100">
+      <Tabs defaultValue="markdown" className="flex flex-1 flex-col gap-0">
+        <div className="border-b border-zinc-800 bg-zinc-900/60 px-6 py-4 backdrop-blur">
+          <div className="flex items-center justify-between gap-4">
+            <ToggleGroup
+              type="single"
+              value={toggleValue}
+              onValueChange={handleToggleChange}
+              aria-label="Formatting options"
+            >
+              <ToggleGroupItem value="bold" aria-label="Toggle bold">
+                <Bold className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="italic" aria-label="Toggle italic">
+                <Italic className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="strikethrough"
+                aria-label="Toggle strikethrough"
+              >
+                <Underline className="h-4 w-4" />
+              </ToggleGroupItem>
+            </ToggleGroup>
+            <TabsList className="ml-auto w-fit bg-zinc-900/60 backdrop-blur">
+              <TabsTrigger value="markdown">Markdown</TabsTrigger>
+              <TabsTrigger value="preview">Preview</TabsTrigger>
+            </TabsList>
+          </div>
+        </div>
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <div className="flex flex-1 flex-col px-6 py-10">
+            <TabsContent value="markdown" className="flex h-full flex-col">
+              <label
+                htmlFor="markdown-input"
+                className="mb-2 block text-sm text-zinc-400"
+              >
+                Markdown
+              </label>
+              <textarea
+                ref={textareaRef}
+                id="markdown-input"
+                value={markdown}
+                onChange={(event) => setMarkdown(event.target.value)}
+                className="h-full min-h-[300px] w-full resize-none rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 font-mono text-sm text-zinc-100 shadow-inner focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500"
+                spellCheck={false}
+              />
+            </TabsContent>
+            <TabsContent value="preview" className="flex h-full flex-col">
+              <span className="mb-2 block text-sm text-zinc-400">Preview</span>
+              <div
+                className="h-full min-h-[300px] overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-900/60 px-4 py-6"
+                dangerouslySetInnerHTML={{ __html: rendered }}
+              />
+            </TabsContent>
+          </div>
+        </div>
+      </Tabs>
+    </section>
+  );
+}
