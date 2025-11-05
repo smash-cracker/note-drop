@@ -12,6 +12,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 type MarkdownSectionProps = {
   slug: string;
@@ -228,6 +229,7 @@ export function MarkdownSection({
                 <TabsTrigger value="preview">Preview</TabsTrigger>
               </TabsList>
             </div>
+            <ModeToggle />
           </div>
         </div>
         <div className="flex flex-1 flex-col overflow-hidden">
