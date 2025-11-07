@@ -138,6 +138,45 @@ export function MarkdownSection({
     };
   }, [markdown]);
 
+  // New function to detect formatting of selected text
+  const detectFormatting = (): string | undefined => {
+    const textarea = textareaRef.current;
+    if (!textarea) return undefined;
+
+    const { selectionStart, selectionEnd, value } = textarea;
+
+    if (selectionStart === selectionEnd) {
+      return undefined; // No selection
+    }
+
+    const selectedText = value.slice(selectionStart, selectionEnd);
+
+    // Check for bold formatting
+    if (selectedText.startsWith("**") && selectedText.endsWith("**") && selectedText.length > 4) {
+      return "bold";
+    }
+
+    // Check for italic formatting
+    if (selectedText.startsWith("*") && selectedText.endsWith("*") && selectedText.length > 2) {
+      return "italic";
+    }
+
+    // Check for strikethrough formatting
+    if (selectedText.startsWith("~~") && selectedText.endsWith("~~") && selectedText.length > 4) {
+      return "strikethrough";
+    }
+
+    return undefined;
+  };
+
+  // Update toggle state when selection changes
+  const handleSelectionChange = () => {
+    if (activeTab === "preview") return;
+
+    const formatting = detectFormatting();
+    setToggleValue(formatting);
+  };
+
   const applyFormat = ({
     prefix,
     suffix = prefix,
@@ -164,6 +203,8 @@ export function MarkdownSection({
       const end = start + snippet.length;
       textarea.focus();
       textarea.setSelectionRange(start, end);
+      // Update toggle state after formatting is applied
+      setToggleValue(undefined); // Reset immediately since we're applying new formatting
     });
   };
 
@@ -279,6 +320,7 @@ export function MarkdownSection({
                   id="markdown-input"
                   value={markdown}
                   onChange={(event) => setMarkdown(event.target.value)}
+                  onSelect={handleSelectionChange} // Added this event handler
                   className="flex-1 min-h-[250px] resize-none rounded-lg border border-border bg-card px-3 py-3 font-mono text-sm text-foreground shadow-inner focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:min-h-[300px] sm:px-4"
                   spellCheck={false}
                 />
